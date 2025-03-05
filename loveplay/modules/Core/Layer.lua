@@ -23,7 +23,7 @@ function LPLayer:RemoveAll()
     end 
 end
 
-function LPLayer:__draw()
+function LPLayer:onDraw()
     local _, _, flags = love.window.getMode()
 
     local desktopWidth, desktopHeight = love.window.getDesktopDimensions(flags.display)
@@ -34,16 +34,16 @@ function LPLayer:__draw()
     love.graphics.setColor(oldColor)
 
     for _, obj in ipairs(self.objects) do
-        if obj.__draw then
-            obj:__draw()
+        if obj.onDraw then
+            obj:onDraw()
         end
     end
 end
 
-function LPLayer:__update(elapsed)
+function LPLayer:onUpdate(elapsed)
     for _, obj in ipairs(self.objects) do
-        if obj.__update then
-            obj:__update(elapsed)
+        if obj.onUpdate then
+            obj:onUpdate(elapsed)
         end
     end
 end

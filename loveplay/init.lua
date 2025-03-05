@@ -28,11 +28,16 @@ end
 
 Loveplay.initialized = false
 Loveplay.currentScene = "root"
+Loveplay.currentActiveScene = "root"
 Loveplay.scenes = {}
 
 Loveplay.Vec2 = import 'Math.Vec2'
 Loveplay.scene = import 'Core.Scene'
 Loveplay.object = import 'Core.Object'
+Loveplay.assets = import 'Core.AssetPool'
+
+Loveplay.assets.addImage("logo", LP_PATH .. "/assets/icon.png")
+Loveplay.assets.addFont("fredoka", LP_PATH .. "/assets/fredoka_regular.ttf")
 
 ---@class Loveplay.Components
 Loveplay.components = {}
@@ -43,6 +48,7 @@ for c = 1, #components, 1 do
     local comp = components[c]:gsub(".lua", "")
     Loveplay.components[components[c]:match("[^/]+$"):gsub(".lua", "")] = require(comp:gsub("/", "%."))
 end
+
 
 --------------------- API ---------------------
 
@@ -68,16 +74,17 @@ function Loveplay.load(config)
         resizable = config.resizable or true,
         packageid = config.packageid or "loveplay.game",
         fpscap = config.fpscap or 60,
+        unfocusedfps = config.unfocusedfps or 25,
         errhand = config.errhand or true,
-        debug = config.debug or false
+        debug = config.debug or false,
     }
 
     -- crate default scene --
     loveplay.scenes[conf.scene] = Loveplay.scene.new()
+    loveplay.currentActiveScene = conf.scene
 
     -- hook shit --
-
-    Loveplay.event.hook(loveplay.scenes[conf.scene], { "__update" })
+    Loveplay.event.hook(loveplay.scenes[loveplay.currentActiveScene], { "onUpdate", "onDraw" })
 
     love.window.setMode(conf.width, conf.height, { resizable = conf.resizable, vsync = conf.vsync })
 
@@ -96,7 +103,7 @@ function Loveplay.load(config)
 
     love.run = function()
         love._FPSCap = conf.fpscap
-        love._unfocusedFPSCap = 20
+        love._unfocusedFPSCap = conf.unfocusedfps
 
         love.math.setRandomSeed(os.time())
         math.randomseed(os.time())
@@ -131,7 +138,7 @@ function Loveplay.load(config)
                 elapsed = love.timer.step()
             end
 
-            Loveplay.scenes[Loveplay.currentScene]:__update(elapsed)
+            Loveplay.scenes[Loveplay.currentActiveScene]:onUpdate(elapsed)
     
             if love.graphics and love.graphics.isActive() then
                 love.graphics.origin()
@@ -140,7 +147,7 @@ function Loveplay.load(config)
     
                     resolution.start()
 
-                        Loveplay.scenes[Loveplay.currentScene]:__draw()
+                        Loveplay.scenes[Loveplay.currentActiveScene]:onDraw()
 
                     resolution.stop()
     

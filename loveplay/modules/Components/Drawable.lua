@@ -11,24 +11,26 @@ DrawableComponent.__index = DrawableComponent
 function DrawableComponent.new()
     local self = setmetatable({}, DrawableComponent)
 
-    self.drawable = love.graphics.newImage(LPASSETS .. "/icon.png")
+    self.drawable = Loveplay.assets.get(Loveplay.assets.assetType.IMAGE, "logo")
     self.scale = vec2(1, 1)
-    self.origin = vec2.ZERO()
-    self.shear = vec2.ZERO()
+    self.origin = vec2.ZERO
+    self.shear = vec2.ZERO
     self.rotation = 0
     self.color = Color.WHITE
 
     return self
 end
 
-function DrawableComponent:__draw()
+function DrawableComponent:onDraw()
     local oldColor = { love.graphics.getColor() }
     love.graphics.setColor(self.color)
-        love.graphics.draw(
-            self.drawable, 
-            self.pos.x, self.pos.y, math.rad(self.rotation), 
-            self.scale.x, self.scale.y, self.shear.x, self.shear.y
-        )
+        if self.drawable then
+            love.graphics.draw(
+                self.drawable, 
+                self.pos.x, self.pos.y, math.rad(self.rotation), 
+                self.scale.x, self.scale.y, self.shear.x, self.shear.y
+            )
+        end
     love.graphics.setColor(oldColor)
 end
 

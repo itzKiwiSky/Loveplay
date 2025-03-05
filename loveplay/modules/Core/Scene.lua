@@ -31,12 +31,12 @@ end
 
 ---------------------------------------------------------------
 
-function LPScene:__draw()
-    self.layers[self.currentLayer]:__draw()
+function LPScene:onDraw()
+    self.layers[self.currentLayer]:onDraw()
 end
 
-function LPScene:__update(elapsed)
-    self.layers[self.currentLayer]:__update(elapsed)
+function LPScene:onUpdate(elapsed)
+    self.layers[self.currentLayer]:onUpdate(elapsed)
 end
 
 return LPScene
