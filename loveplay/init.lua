@@ -15,7 +15,9 @@ resolution = require(LP_PATH .. "libraries.resolution")
 lume = require(LP_PATH .. "libraries.lume")
 enum = require(LP_PATH .. "libraries.enum")
 camera = require(LP_PATH .. "libraries.camera")
-event = require(LP_PATH .. "libraries.event")
+Loveplay.event = require(LP_PATH .. "libraries.event")
+
+
 local fsutil = require(LP_PATH .. "FSutil")
 
 local addons = fsutil.scanFolder(LP_PATH .. "/addons")
@@ -72,6 +74,10 @@ function Loveplay.load(config)
 
     -- crate default scene --
     loveplay.scenes[conf.scene] = Loveplay.scene.new()
+
+    -- hook shit --
+
+    Loveplay.event.hook(loveplay.scenes[conf.scene], { "__update" })
 
     love.window.setMode(conf.width, conf.height, { resizable = conf.resizable, vsync = conf.vsync })
 
