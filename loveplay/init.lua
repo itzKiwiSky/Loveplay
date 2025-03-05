@@ -28,17 +28,18 @@ Loveplay.initialized = false
 Loveplay.currentScene = "root"
 Loveplay.scenes = {}
 
+Loveplay.Vec2 = import 'Math.Vec2'
 Loveplay.scene = import 'Core.Scene'
 Loveplay.object = import 'Core.Object'
-
 
 ---@class Loveplay.Components
 Loveplay.components = {}
 
 -- load components --
-local components = love.filesystem.getDirectoryItems(LP_PATH:gsub("%.", "/") .. "modules/Components")
+local components = fsutil.scanFolder(LP_PATH .. "/modules/Components")
 for c = 1, #components, 1 do
-    Loveplay.components[components[c]:gsub("%.lua", "")] = require(LP_PATH .. "modules.Components." .. components[c]:gsub("%.lua", ""))
+    local comp = components[c]:gsub(".lua", "")
+    Loveplay.components[components[c]:match("[^/]+$"):gsub(".lua", "")] = require(comp:gsub("/", "%."))
 end
 
 --------------------- API ---------------------
@@ -46,7 +47,6 @@ end
 function Loveplay.newScene(name)
     Loveplay.scenes[name] = Loveplay.scene.new()
 end
-
 
 --------------------- callbacks ---------------------
 
@@ -67,7 +67,7 @@ function Loveplay.load(config)
         packageid = config.packageid or "loveplay.game",
         fpscap = config.fpscap or 60,
         errhand = config.errhand or true,
-        verbose = config.verbose or false
+        debug = config.debug or false
     }
 
     -- crate default scene --

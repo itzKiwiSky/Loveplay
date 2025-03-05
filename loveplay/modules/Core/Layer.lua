@@ -30,12 +30,12 @@ function LPLayer:__draw()
     local oldColor = { love.graphics.getColor() }
     
     love.graphics.setColor(self.backgroundColor)
-    love.graphics.rectangle("fill", 0, 0, desktopWidth, desktopHeight)
+        love.graphics.rectangle("fill", 0, 0, desktopWidth, desktopHeight)
     love.graphics.setColor(oldColor)
 
     for _, obj in ipairs(self.objects) do
         if obj.__draw then
-            obj.__draw()
+            obj:__draw()
         end
     end
 end
@@ -43,7 +43,7 @@ end
 function LPLayer:__update(elapsed)
     for _, obj in ipairs(self.objects) do
         if obj.__update then
-            obj.__update(elapsed)
+            obj:__update(elapsed)
         end
     end
 end

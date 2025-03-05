@@ -1,7 +1,10 @@
 loveplay = require 'loveplay'
 
-loveplay.load({ verbose = true })
+loveplay.load({ debug = true })
 
-loveplay.object(90, 90, {
+local obj = loveplay.object(90, 90, {
     loveplay.components.Drawable
 })
+
+obj.scale = loveplay.Vec2(0.2, 0.2)
+obj.pos = loveplay.Vec2(32, 32)
