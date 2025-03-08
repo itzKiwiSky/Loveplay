@@ -2,6 +2,29 @@ Loveplay = {}
 
 local LP_PATH = (...) .. "."
 
+local function deepMerge(target, source)
+    if type(target) ~= "table" or type(source) ~= "table" then
+        return target
+    end
+
+    if getmetatable(source) then
+        setmetatable(target, getmetatable(source))
+    end
+
+    for key, value in pairs(source) do
+        if type(value) == "table" then
+            if type(target[key]) ~= "table" then
+                target[key] = {}
+            end
+            deepMerge(target[key], value)
+        else
+            target[key] = value
+        end
+    end
+
+    return target
+end
+
 function import(modname)
     if modname == nil or #modname == 0 then
         return require(LP_PATH)
@@ -27,9 +50,7 @@ for a = 1, #addons, 1 do
 end
 
 Loveplay.initialized = false
-Loveplay.currentScene = "root"
 Loveplay.currentActiveScene = "root"
-Loveplay.scenes = {}
 
 Loveplay.Vec2 = import 'Math.Vec2'
 Loveplay.scene = import 'Core.Scene'
@@ -41,20 +62,6 @@ Loveplay.assets.addFont("fredoka", LP_PATH .. "/assets/fredoka_regular.ttf")
 
 ---@class Loveplay.Components
 Loveplay.components = {}
-
--- load components --
-local components = fsutil.scanFolder(LP_PATH .. "/modules/Components")
-for c = 1, #components, 1 do
-    local comp = components[c]:gsub(".lua", "")
-    Loveplay.components[components[c]:match("[^/]+$"):gsub(".lua", "")] = require(comp:gsub("/", "%."))
-end
-
-
---------------------- API ---------------------
-
-function Loveplay.newScene(name)
-    Loveplay.scenes[name] = Loveplay.scene.new()
-end
 
 --------------------- callbacks ---------------------
 
@@ -77,14 +84,23 @@ function Loveplay.load(config)
         unfocusedfps = config.unfocusedfps or 25,
         errhand = config.errhand or true,
         debug = config.debug or false,
+        global = config.global or false,
     }
 
-    -- crate default scene --
-    loveplay.scenes[conf.scene] = Loveplay.scene.new()
-    loveplay.currentActiveScene = conf.scene
+    -- export loveplay to global --
+    
+    Loveplay.windowWidth = conf.width
+    Loveplay.windowHeight = conf.height
 
-    -- hook shit --
-    Loveplay.event.hook(loveplay.scenes[loveplay.currentActiveScene], { "onUpdate", "onDraw" })
+    Loveplay.scene.newScene(conf.scene, function() end)
+    Loveplay.scene.switchScene(conf.scene)
+
+    -- load components --
+    local components = fsutil.scanFolder(LP_PATH .. "/modules/Components")
+    for c = 1, #components, 1 do
+        local comp = components[c]:gsub(".lua", "")
+        Loveplay.components[components[c]:match("[^/]+$"):gsub(".lua", "")] = require(comp:gsub("/", "%."))
+    end
 
     love.window.setMode(conf.width, conf.height, { resizable = conf.resizable, vsync = conf.vsync })
 
@@ -138,7 +154,7 @@ function Loveplay.load(config)
                 elapsed = love.timer.step()
             end
 
-            Loveplay.scenes[Loveplay.currentActiveScene]:onUpdate(elapsed)
+            Loveplay.scene.update(elapsed)
     
             if love.graphics and love.graphics.isActive() then
                 love.graphics.origin()
@@ -147,7 +163,7 @@ function Loveplay.load(config)
     
                     resolution.start()
 
-                        Loveplay.scenes[Loveplay.currentActiveScene]:onDraw()
+                        Loveplay.scene.draw()
 
                     resolution.stop()
     
@@ -160,7 +176,7 @@ function Loveplay.load(config)
         end
     end
 
-    loveplay.initialized = true
+    Loveplay.initialized = true
 end
 
 return Loveplay

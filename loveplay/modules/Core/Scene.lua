@@ -1,42 +1,69 @@
-local Layer = import 'Core.Layer'
-local Camera = import 'Core.Camera'
+local camera = import 'Core.Camera'
 
 local LPScene = {}
-LPScene.__index = LPScene
+LPScene.scenes = {}
+LPScene.currentScene = "root"
+LPScene.camera = camera.new()
 
-function LPScene.new()
-    local self = setmetatable({}, LPScene)
+----- interfaces -----------
 
-    self.layers = {}
-    self.camera = Camera.new()
-    self.currentLayer = "root"
+local LPSceneEvents = {}
 
-    -- add a first layer to be able to place objects
-    self:AddLayer(self.currentLayer)
+function LPSceneEvents.sceneLoad()end
 
-    return self
+function LPSceneEvents.sceneDraw()end
+
+function LPSceneEvents.sceneUpdate(elapsed)end
+
+---------------------
+
+function LPScene.newScene(name, fun)
+    LPScene.scenes[name] = {
+        objects = {},
+        def = fun
+    }
+    --fun(LPScene.scenes[name])
+    --LPScene.sceneLoad()
 end
 
-function LPScene:AddToScene(object)
-    self.layers[self.currentLayer]:Add(object)
+function LPScene.switchScene(name)
+    LPScene.currentScene = name
+    LPScene.camera:setCameraPosition(Loveplay.windowWidth / 2, Loveplay.windowHeight / 2)
+    LPScene.scenes[LPScene.currentScene].def(LPSceneEvents)
+    if LPSceneEvents.sceneLoad then
+        LPSceneEvents.sceneLoad()
+    end
 end
 
-function LPScene:AddLayer(name)
-    self.layers[name] = Layer.new()
+function LPScene.add(gameObject)
+    table.insert(LPScene.scenes[LPScene.currentScene].objects, gameObject)
+    print(inspect(LPScene.scenes[LPScene.currentScene].objects))
+    --Loveplay.event.dispatch("sceneObjectAdded", gameObject)
 end
 
-function LPScene:RemoveLayer(name)
-    self.layers[self.currentLayer] = nil
+function LPScene.draw()
+    LPScene.camera:start()
+        for _, obj in ipairs(LPScene.scenes[LPScene.currentScene].objects) do
+            if obj.__draw then
+                obj.__draw(obj)
+            end
+        end
+    LPScene.camera:stop()
+    if LPSceneEvents.sceneDraw then
+        LPSceneEvents.sceneDraw()
+    end
 end
 
----------------------------------------------------------------
-
-function LPScene:onDraw()
-    self.layers[self.currentLayer]:onDraw()
+function LPScene.update(elapsed)
+    for _, obj in ipairs(LPScene.scenes[LPScene.currentScene].objects) do
+        if obj.__update then
+            obj.__update(obj, elapsed)
+        end
+    end
+    if LPSceneEvents.sceneUpdate then
+        LPSceneEvents.sceneUpdate(LPScene.scenes[LPScene.currentScene].objects, elapsed)
+    end
 end
 
-function LPScene:onUpdate(elapsed)
-    self.layers[self.currentLayer]:onUpdate(elapsed)
-end
 
 return LPScene

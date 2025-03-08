@@ -1,14 +1,26 @@
-loveplay = require 'loveplay'
+local loveplay = require 'loveplay'
 
 loveplay.load({ debug = true })
 
-local obj = loveplay.object(90, 90, {
-    loveplay.components.Drawable
-})
+loveplay.scene.newScene("main", function(scene)
+    scene.sceneLoad = function()
+        local obj = loveplay.object({ "test" }, {
+            loveplay.components.Transform,
+            loveplay.components.Drawable,
+        })
 
-obj.scale = loveplay.Vec2(0.2, 0.2)
-obj.pos = loveplay.Vec2(90, 32)
+        obj.pos.x = -128
+        obj.pos.y = -128
+        obj.scale = Loveplay.Vec2(5, 5)
 
-loveplay.event.on("onUpdate", function()
-    obj.pos.x = obj.pos.x + 1
+        --print(inspect(obj))
+
+        loveplay.scene.add(obj)
+    end
+
+    scene.sceneUpdate = function(objs, elapsed)
+        obj.pos.x = obj.pos.x - 10 * elapsed
+    end
 end)
+
+loveplay.scene.switchScene("main")

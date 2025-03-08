@@ -8,7 +8,7 @@ function LPCamera.new(x, y, zoom, rotation)
 
     self.x, self.y = x or 0, y or 0
     self.zoom = zoom or 1
-    self.rotation = rotation
+    self.rotation = rotation or 0
 
     return self
 end
@@ -18,7 +18,7 @@ end
 ---@param y number
 ---@param w number
 ---@param h number
-function LPCamera:Start(x, y, w, h)
+function LPCamera:start(x, y, w, h)
     x, y = x or 0, y or 0
     w, h = w or love.graphics.getWidth(), h or love.graphics.getHeight()
 
@@ -31,7 +31,7 @@ function LPCamera:Start(x, y, w, h)
 end
 
 --- Detach camera to stop the effect transformation
-function LPCamera:Stop()
+function LPCamera:stop()
     love.graphics.pop()
 end
 
@@ -42,7 +42,7 @@ end
 ---@param oy number
 ---@param w number
 ---@param h number 
-function LPCamera:CameraCoords(x, y, ox, oy, w, h)
+function LPCamera:cameraCoords(x, y, ox, oy, w, h)
     ox, oy = ox or 0, oy or 0
     w, h = w or love.graphics.getWidth(), h or love.graphics.getHeight()
 
@@ -59,7 +59,7 @@ end
 ---@param oy number
 ---@param w number
 ---@param h number
-function LPCamera:WorldCoords(x, y, ox, oy, w, h)
+function LPCamera:worldCoords(x, y, ox, oy, w, h)
     ox, oy = ox or 0, oy or 0
     w, h = w or love.graphics.getWidth(), h or love.graphics.getHeight()
 
@@ -75,21 +75,21 @@ end
 ---@param oy number
 ---@param w number
 ---@param h number
-function LPCamera:MousePosition(ox, oy, w, h)
+function LPCamera:mousePosition(ox, oy, w, h)
     local mx, my = love.mouse.getPosition()
     return self:worldCoords(mx, my, ox, oy, w, h)
 end
 
 --- Set camera zoom
 ---@param zoom number
-function LPCamera:SetZoom(zoom)
+function LPCamera:setZoom(zoom)
     self.zoom = zoom
     return self
 end
 
 --- Set camera rotation
 ---@param rotation number
-function LPCamera:SetRotation(rotation)
+function LPCamera:setRotation(rotation)
     self.rotation = math.rad(rotation)
     return self
 end
@@ -97,7 +97,7 @@ end
 --- Set camera position
 ---@param x number
 ---@param y number
-function LPCamera:SetCameraPosition(x, y)
+function LPCamera:setCameraPosition(x, y)
     self.x, self.y = x, y
     return self
 end

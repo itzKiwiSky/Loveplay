@@ -34,8 +34,8 @@ function LPLayer:onDraw()
     love.graphics.setColor(oldColor)
 
     for _, obj in ipairs(self.objects) do
-        if obj.onDraw then
-            obj:onDraw()
+        if obj.__draw then
+            obj:__draw()
         end
     end
 end

@@ -9,10 +9,10 @@ local Color = {}
 ---@private
 ---
 local function hexToRGBA(hex)
-    local a = bit.band(bit.rshift(hex, 24), 0xFF) / 255
-    local r = bit.band(bit.rshift(hex, 16), 0xFF) / 255
-    local g = bit.band(bit.rshift(hex, 8), 0xFF) / 255
-    local b = bit.band(hex, 0xFF) / 255
+    local r = bit.band(bit.rshift(hex, 24), 0xFF) / 255
+    local g = bit.band(bit.rshift(hex, 16), 0xFF) / 255
+    local b = bit.band(bit.rshift(hex, 8), 0xFF) / 255
+    local a = bit.band(hex, 0xFF) / 255
     return { r, g, b, a }
 end
 

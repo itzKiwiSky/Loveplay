@@ -23,17 +23,29 @@ function Vec2.new(x, y)
     return self
 end
 
-Vec2.ZERO = Vec2.new(0, 0)
+function Vec2.ZERO()
+    return Vec2.new(0, 0)
+end
 
-Vec2.ONE = Vec2.new(1, 1)
+function Vec2.ONE()
+    return Vec2.new(1, 1)
+end
 
-Vec2.LEFT = Vec2.new(-1, 0)
+function Vec2.LEFT()
+    return Vec2.new(-1, 0)
+end
 
-Vec2.UP = Vec2.new(0, -1)
+function Vec2.RIGHT()
+    return Vec2.new(1, 0)
+end
 
-Vec2.DOWN = Vec2.new(0, 1)
+function Vec2.UP()
+    return Vec2.new(0, -1)
+end
 
-Vec2.RIGHT = Vec2.new(1, 0)
+function Vec2.DOWN()
+    return Vec2.new(0, 1)
+end
 
 function Vec2:clone(vec)
     return Vec2.new(vec:unpack())

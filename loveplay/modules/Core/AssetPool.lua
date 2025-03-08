@@ -9,12 +9,12 @@ LPAssetPool.fonts = {
 LPAssetPool.images = {}
 LPAssetPool.shaders = {}
 
-LPAssetPool.audioLoadType = enum {
+LPAssetPool.AUDIOLOADTYPE = enum {
     "STATIC",
     "STREAM"
 }
 
-LPAssetPool.assetType = enum {
+LPAssetPool.ASSETTYPE = enum {
     "AUDIO",
     "FONT",
     "IMAGE",
@@ -27,7 +27,7 @@ local assetType = { [0] = "audios", "fonts", "images", "shaders" }
 function LPAssetPool.get(type, tag, args)
     args = args or {
         fontsize = 20,
-        sourcetype = LPAssetPool.audioLoadType.STATIC
+        sourcetype = LPAssetPool.AUDIOLOADTYPE.STATIC
     }
     --print(assetType[type])
     return switch(assetType[type], {
@@ -36,7 +36,7 @@ function LPAssetPool.get(type, tag, args)
         end,
         ["fonts"] = function()
             if LPAssetPool.fonts.paths[tag] then
-                if LPAssetPool.fonts.cache[tag .. "-" .. args.fontsize] then
+                if not LPAssetPool.fonts.cache[tag .. "-" .. args.fontsize] then
                     LPAssetPool.fonts.cache[tag .. "-" .. args.fontsize] = LPAssetPool.fonts.paths[tag]:makeFont(args.fontsize)
                     return LPAssetPool.fonts.cache[tag .. "-" .. args.fontsize]
                 end
